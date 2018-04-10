@@ -15,7 +15,7 @@ public class PrintMarketingDao {
     private String url;
     private String locationDB;
     private String passDB;
-    private String test;
+    private String test3;
 
     public PrintMarketingDao() {
     }
