@@ -1,11 +1,5 @@
 package dao;
-//test for github - andrij uuyby
-//gvtgubhnijm
-// iugiuhiu
-//llll;;
-// arash rules!!!
 
-//newwwww test
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,21 +7,20 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import model.Agent;
-import model.Location;
+import model.Client;
 
 public class PrintMarketingDao {
 
     private String url;
-    private String locationDB;
+    private String userDB;
     private String passDB;
 
     public PrintMarketingDao() {
     }
 
-    public PrintMarketingDao(String url, String locationDB, String passDB) {
+    public PrintMarketingDao(String url, String userDB, String passDB) {
         this.url = url;
-        this.locationDB = locationDB;
+        this.userDB = userDB;
         this.passDB = passDB;
     }
 
@@ -36,7 +29,7 @@ public class PrintMarketingDao {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             if (conn == null || conn.isClosed()) {
-                conn = DriverManager.getConnection(url, locationDB, passDB);
+                conn = DriverManager.getConnection(url, userDB, passDB);
             }
         } catch (SQLException sqlEx) {
             sqlEx.printStackTrace();
@@ -46,17 +39,27 @@ public class PrintMarketingDao {
         return conn;
     }
 
-    public int addLocation(Location locationObj) {
+    public int addClient(Client clientObj) {
         int res = 0;
-        String sql = "INSERT INTO location (locationName,distributionCapacity) VALUES (?,?)";
+        String sql = "INSERT INTO clients (userId, firstName, lastName, streetNumber, streetName, city, province, postalCode, telOffice, telCell, email, company, companyType) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
         try {
             Connection conn = getConnection();
             if (conn != null) {
                 PreparedStatement stmt = conn.prepareStatement(sql);
-                stmt.setString(1, locationObj.getLocationName());
-                stmt.setInt(2, locationObj.getDistributionCapacity());
+                stmt.setInt(1, clientObj.getUserId());
+                stmt.setString(2, clientObj.getFirstName());
+                stmt.setString(3, clientObj.getLastName());
+                stmt.setInt(4, clientObj.getStreetNumber());
+                stmt.setString(5, clientObj.getStreetName());
+                stmt.setString(6, clientObj.getCity());
+                stmt.setString(7, clientObj.getProvince());
+                stmt.setString(8, clientObj.getPostalCode());
+                stmt.setString(9, clientObj.getTelOffice());
+                stmt.setString(10, clientObj.getTelCell());
+                stmt.setString(11, clientObj.getEmail());
+                stmt.setString(12, clientObj.getCompany());
+                stmt.setString(13, clientObj.getCompanyType());
                 res = stmt.executeUpdate();
-                stmt.close();
                 conn.close();
             }
 
@@ -66,12 +69,23 @@ public class PrintMarketingDao {
         return res;
     }
 
-    public ArrayList<Location> viewLocations() {
-        ArrayList<Location> locationList = new ArrayList();
-        String sql = "SELECT * FROM location";
-        String locationNM = "";
-        String DCapacity = "";
-        int id = 0;
+    public ArrayList<Client> viewClients() {
+        ArrayList<Client> clientList = new ArrayList();
+        String sql = "SELECT * FROM clients";
+        int id;
+        int userId;
+        String firstName;
+        String lastName;
+        int streetNumber;
+        String streetName;
+        String city;
+        String province;
+        String postalCode;
+        String telOffice;
+        String telCell;
+        String email;
+        String company;
+        String companyType;
 
         try {
             Connection conn = getConnection();
@@ -79,129 +93,39 @@ public class PrintMarketingDao {
             ResultSet resultSet = stmt.executeQuery(sql);
 
             while (resultSet.next()) {
-                locationNM = resultSet.getString("locationName");
-                DCapacity = resultSet.getString("distributionCapacity");
                 id = resultSet.getInt("id");
-                Location locationObj = new Location();
-
-                locationObj.setLocationId(id);
-                locationObj.setLocationName(locationNM);
-                locationObj.setDistributionCapacity(Integer.parseInt(DCapacity));
-                locationList.add(locationObj);
-            }
-            resultSet.close();
-            stmt.close();
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
-        } catch (SQLException sqlEx) {
-            sqlEx.printStackTrace();
-        }
-        return locationList;
-    }
-
-    public Location showLocation(int id) throws SQLException {
-        Location locationObj = null;
-        String sql = "SELECT * FROM location ";
-        sql += "WHERE id = ?";
-
-        Connection con = getConnection();
-        PreparedStatement statement = con.prepareStatement(sql);
-        statement.setInt(1, id);
-        ResultSet result = statement.executeQuery();
-
-        while (result.next()) {
-            locationObj = new Location();
-            locationObj.setLocationId(result.getInt("id"));
-            locationObj.setLocationName(result.getString("locationName"));
-            locationObj.setDistributionCapacity(result.getInt("distributionCapacity"));
-        }
-        return locationObj;
-    }
-
-    public boolean updateLocation(Location locationObj) throws SQLException {
-        boolean res;
-        String sql = "UPDATE location SET locationName = ?, distributionCapacity = ? ";
-        sql += "WHERE id = ?";
-
-        Connection con = getConnection();
-        PreparedStatement statement = con.prepareStatement(sql);
-
-        statement.setString(1, locationObj.getLocationName());
-        statement.setInt(2, locationObj.getDistributionCapacity());
-        statement.setInt(3, locationObj.getLocationId());
-
-        res = statement.executeUpdate() > 0;
-
-        return res;
-    }
-
-    public boolean deleteLocation(Location locationObj) throws SQLException {
-        boolean res;
-        String sql = "delete from location  ";
-        sql += "WHERE id = ?";
-
-        Connection con = getConnection();
-        PreparedStatement statement = con.prepareStatement(sql);
-        statement.setInt(1, locationObj.getLocationId());
-        res = statement.executeUpdate() > 0;
-
-        return res;
-    }
-
-    public int addAgent(Agent agentObj) {
-        int res = 0;
-        String sql = "INSERT INTO marketingagent (firstName, lastName, phoneNo, email, userName, password) VALUES (?,?,?,?,?,?)";
-        try {
-            Connection conn = getConnection();
-            if (conn != null) {
-                PreparedStatement stmt = conn.prepareStatement(sql);
-                stmt.setString(1, agentObj.getFirstName());
-                stmt.setString(2, agentObj.getLastName());
-                stmt.setString(3, agentObj.getPhoneNo());
-                stmt.setString(4, agentObj.getEmail());
-                stmt.setString(5, agentObj.getUserName());
-                stmt.setString(6, agentObj.getPassword());
-                res = stmt.executeUpdate();
-                stmt.close();
-                conn.close();
-            }
-
-        } catch (SQLException sqlEx) {
-            sqlEx.printStackTrace();
-        }
-        return res;
-    }
-
-    public ArrayList<Agent> viewAgents() {
-        ArrayList<Agent> agentList = new ArrayList();
-        String sql = "SELECT * FROM marketingagent";
-        String firstName, lastName, phoneNo, email, userName, password = "";
-        int id = 0;
-
-        try {
-            Connection conn = getConnection();
-            Statement stmt = conn.createStatement();
-            ResultSet resultSet = stmt.executeQuery(sql);
-
-            while (resultSet.next()) {
+                userId = resultSet.getInt("userId");
                 firstName = resultSet.getString("firstName");
                 lastName = resultSet.getString("lastName");
-                phoneNo = resultSet.getString("phoneNo");
+                streetNumber = resultSet.getInt("streetNumber");
+                streetName = resultSet.getString("streetName");
+                city = resultSet.getString("city");
+                province = resultSet.getString("province");
+                postalCode = resultSet.getString("postalCode");
+                telOffice = resultSet.getString("telOffice");
+                telCell = resultSet.getString("telCell");
                 email = resultSet.getString("email");
-                userName = resultSet.getString("userName");
-                password = resultSet.getString("password");
-                id = resultSet.getInt("id");
-                Agent agentObj = new Agent();
+                company = resultSet.getString("company");
+                companyType = resultSet.getString("companyType");
 
-                agentObj.setAgentId(id);
-                agentObj.setFirstName(firstName);
-                agentObj.setLastName(lastName);
-                agentObj.setPhoneNo(phoneNo);
-                agentObj.setEmail(email);
-                agentObj.setUserName(userName);
-                agentObj.setPassword(password);
-                agentList.add(agentObj);
+                Client clientObj = new Client();
+
+                clientObj.setId(id);
+                clientObj.setUserId(userId);
+                clientObj.setFirstName(firstName);
+                clientObj.setLastName(lastName);
+                clientObj.setStreetNumber(streetNumber);
+                clientObj.setStreetName(streetName);
+                clientObj.setCity(city);
+                clientObj.setProvince(province);
+                clientObj.setPostalCode(postalCode);
+                clientObj.setTelOffice(telOffice);
+                clientObj.setTelCell(telCell);
+                clientObj.setEmail(email);
+                clientObj.setCompany(company);
+                clientObj.setCompanyType(companyType);
+
+                clientList.add(clientObj);
             }
             resultSet.close();
             stmt.close();
@@ -211,12 +135,12 @@ public class PrintMarketingDao {
         } catch (SQLException sqlEx) {
             sqlEx.printStackTrace();
         }
-        return agentList;
+        return clientList;
     }
 
-    public Agent showAgent(int id) throws SQLException {
-        Agent agentObj = null;
-        String sql = "SELECT * FROM marketingagent ";
+    public Client showClient(int id) throws SQLException {
+        Client clientObj = null;
+        String sql = "SELECT * FROM clients ";
         sql += "WHERE id = ?";
 
         Connection con = getConnection();
@@ -225,50 +149,22 @@ public class PrintMarketingDao {
         ResultSet result = statement.executeQuery();
 
         while (result.next()) {
-            agentObj = new Agent();
-            agentObj.setAgentId(result.getInt("id"));
-            agentObj.setFirstName(result.getString("firstName"));
-            agentObj.setLastName(result.getString("lastName"));
-            agentObj.setPhoneNo(result.getString("phoneNo"));
-            agentObj.setEmail(result.getString("email"));
-            agentObj.setUserName(result.getString("userName"));
-            agentObj.setPassword(result.getString("password"));//I wasn't gonna include this primarily cause it's for privacy reasons
-            //but I'll add it anyways in case we lose marks if we don't.
+            clientObj = new Client();
+            clientObj.setId(result.getInt("id"));
+            clientObj.setUserId(result.getInt("userId"));
+            clientObj.setFirstName(result.getString("firstName"));
+            clientObj.setLastName(result.getString("lastName"));
+            clientObj.setStreetNumber(result.getInt("streetNumber"));
+            clientObj.setStreetName(result.getString("streetName"));
+            clientObj.setCity(result.getString("city"));
+            clientObj.setProvince(result.getString("province"));
+            clientObj.setPostalCode(result.getString("PostalCode"));
+            clientObj.setTelOffice(result.getString("telOffice"));
+            clientObj.setTelCell(result.getString("telCell"));
+            clientObj.setEmail(result.getString("email"));
+            clientObj.setCompany(result.getString("company"));
+            clientObj.setCompanyType(result.getString("companyType"));
         }
-        return agentObj;
-    }
-
-    public boolean updateAgent(Agent agentObj) throws SQLException {
-        boolean res;
-        String sql = "UPDATE marketingagent SET firstName = ?, lastName = ?, phoneNo = ?, email = ?,userName = ?, password = ? ";
-        sql += "WHERE id = ?";
-
-        Connection con = getConnection();
-        PreparedStatement statement = con.prepareStatement(sql);
-
-        statement.setString(1, agentObj.getFirstName());
-        statement.setString(2, agentObj.getLastName());
-        statement.setString(3, agentObj.getPhoneNo());
-        statement.setString(4, agentObj.getEmail());
-        statement.setString(5, agentObj.getUserName());
-        statement.setString(6, agentObj.getPassword());
-        statement.setInt(7, agentObj.getAgentId());
-
-        res = statement.executeUpdate() > 0;
-
-        return res;
-    }
-
-    public boolean deleteAgent(Agent agentObj) throws SQLException {
-        boolean res;
-        String sql = "delete from marketingagent  ";
-        sql += "WHERE id = ?";
-
-        Connection con = getConnection();
-        PreparedStatement statement = con.prepareStatement(sql);
-        statement.setInt(1, agentObj.getAgentId());
-        res = statement.executeUpdate() > 0;
-
-        return res;
+        return clientObj;
     }
 }
