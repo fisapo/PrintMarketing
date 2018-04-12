@@ -1,6 +1,7 @@
 package servlet;
 
-import dao.PrintMarketingDao;
+import dao.AgentDao;
+import dao.LocationDao;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -18,7 +19,8 @@ public class RegisterServlet extends HttpServlet {
 
     RegisterLocationService registerLocationService;
     RegisterAgentService registerAgentService;
-    PrintMarketingDao registerDao;
+    LocationDao registerLocationDao;
+    AgentDao registerAgentDao;
     String jdbcUserName;
     String jdbcPassword;
     String jdbcURL;
@@ -29,7 +31,8 @@ public class RegisterServlet extends HttpServlet {
         jdbcUserName = getServletContext().getInitParameter("jdbcUserName");
         jdbcPassword = getServletContext().getInitParameter("jdbcPassword");
 
-        registerDao = new PrintMarketingDao(jdbcURL, jdbcUserName, jdbcPassword);
+        registerLocationDao = new LocationDao(jdbcURL, jdbcUserName, jdbcPassword);
+        registerAgentDao = new AgentDao(jdbcURL, jdbcUserName, jdbcPassword);
         registerLocationService = new RegisterLocationService();
         registerAgentService = new RegisterAgentService();
 
@@ -38,63 +41,63 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String Action = request.getServletPath() + "Location";//gets action+ word "Location"
+        String Action = request.getServletPath();//gets action+ word "Location"
         System.out.println(Action);//Used for debugging.
-        //String Action = request.getParameter("submit");
         switch (Action) {
-            case "/newLocLocation1":
+            case "/newLocation":
                 showNewLocationForm(request, response);
                 break;
 
-            case "/insertLocLocation1":
+            case "/insertLocation":
                 addLocation(request, response);
                 break;
 
-            case "/editLocLocation1":
+            case "/editLocation":
                 showEditForm(request, response);
                 break;
 
-            case "/updateLocLocation1":
+            case "/updateLocation":
                 updateLocation(request, response);
                 break;
-            case "/deleteLocation1":
+            case "/deleteLocation":
                 deleteLocation(request, response);
                 break;
-            case "/AgentFromLocation1":
+            case "/AgentFromLocation":
                 viewAgents(request, response);
                 break;
-            default:
+            case "/listLocation":
                 viewLocations(request, response);
                 break;
-
-        }
-
-        switch (Action) {
-
-            case "/NewAgeLocation":
+            case "/newAgent":
                 showNewAgentForm(request, response);
                 break;
 
-            case "/insertAgentLocation":
+            case "/insertAgent":
                 addAgent(request, response);
                 break;
 
-            case "/editAgeLocation":
+            case "/editAgent":
                 showAgentEditForm(request, response);
                 break;
 
-            case "/updateAgeLocation":
+            case "/updateAgent":
                 updateAgent(request, response);
                 break;
-            case "/deleteAgeLocation":
+            case "/deleteAgent":
                 deleteAgent(request, response);
                 break;
             case "/AgentToLocation":
                 viewLocations(request, response);
                 break;
-            default:
+            case "/listAgent":
                 viewAgents(request, response);
                 break;
+            case "/":
+                viewLocations(request, response);
+                break;
+            /*default:
+                viewAgents(request, response);
+                break;*/
         }
     }
 
@@ -110,10 +113,10 @@ public class RegisterServlet extends HttpServlet {
         try {
             String locationName = request.getParameter("locationName");
             int distributionCapacity = Integer.parseInt(request.getParameter("distributionCapacity"));
-            int res = registerLocationService.addLocation(locationName, distributionCapacity, registerDao);
+            int res = registerLocationService.addLocation(locationName, distributionCapacity, registerLocationDao);
 
             if (res > 0) {
-                response.sendRedirect("listLoc");
+                viewLocations(request, response);
             }
         } catch (NumberFormatException o) {//In case the user wants to try and break the code.
             request.setAttribute("error", message);
@@ -125,7 +128,7 @@ public class RegisterServlet extends HttpServlet {
     protected void viewLocations(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ArrayList<Location> locationList = new ArrayList();
-        locationList = registerLocationService.viewLocations(registerDao);
+        locationList = registerLocationService.viewLocations(registerLocationDao);
 
         request.setAttribute("locationList", locationList);
         RequestDispatcher dispatcher = request.getRequestDispatcher("/Location/viewLocationList.jsp");
@@ -143,7 +146,7 @@ public class RegisterServlet extends HttpServlet {
             throws IOException, ServletException {
         int id = Integer.parseInt(request.getParameter("id"));
         try {
-            Location location = registerLocationService.showLocation(id, registerDao);
+            Location location = registerLocationService.showLocation(id, registerLocationDao);
             request.setAttribute("location", location);
 
             RequestDispatcher dispatcher = request.getRequestDispatcher("/Location/editLocationForm.jsp");
@@ -164,12 +167,12 @@ public class RegisterServlet extends HttpServlet {
             int distributionCapacity = Integer.parseInt(request.getParameter("distributionCapacity"));
             Location locationObj = new Location(id, locationName, distributionCapacity);
             try {
-                registerLocationService.updateLocation(locationObj, registerDao);
+                registerLocationService.updateLocation(locationObj, registerLocationDao);
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
+            viewLocations(request, response);
 
-            response.sendRedirect("listLocLocation");
         } catch (NumberFormatException o) {//In case the user wants to try and break the code.
             request.setAttribute("error", message);
             request.setAttribute("locationName", locationName);
@@ -184,12 +187,12 @@ public class RegisterServlet extends HttpServlet {
 
         Location locationObj = new Location(id);
         try {
-            registerLocationService.deleteLocation(locationObj, registerDao);
+            registerLocationService.deleteLocation(locationObj, registerLocationDao);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+        viewLocations(request, response);
 
-        response.sendRedirect("listLoc");
     }
 
     protected void addAgent(HttpServletRequest request, HttpServletResponse response)
@@ -197,20 +200,21 @@ public class RegisterServlet extends HttpServlet {
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
         String phoneNo = request.getParameter("phoneNo");
-        String email = request.getParameter("email");
+        String email = request.getParameter("Email");
         String userName = request.getParameter("userName");
         String password = request.getParameter("password");
-        int res = registerAgentService.addAgent(firstName, lastName, phoneNo, email, userName, password, registerDao);
+        int res = registerAgentService.addAgent(firstName, lastName, phoneNo, email, userName, password, registerAgentDao);
 
         if (res > 0) {
-            response.sendRedirect("listAgent");
+            viewAgents(request, response);
         }
+
     }
 
     protected void viewAgents(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ArrayList<Agent> agentList = new ArrayList();
-        agentList = registerAgentService.viewAgents(registerDao);
+        agentList = registerAgentService.viewAgents(registerAgentDao);
 
         request.setAttribute("agentList", agentList);
         RequestDispatcher dispatcher = request.getRequestDispatcher("/Agent/viewAgentList.jsp");
@@ -226,9 +230,9 @@ public class RegisterServlet extends HttpServlet {
 
     private void showAgentEditForm(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        int agentId = Integer.parseInt(request.getParameter("agentId"));
+        int agentId = Integer.parseInt(request.getParameter("id"));
         try {
-            Agent agent = registerAgentService.showAgent(agentId, registerDao);
+            Agent agent = registerAgentService.showAgent(agentId, registerAgentDao);
             request.setAttribute("agent", agent);
 
             RequestDispatcher dispatcher = request.getRequestDispatcher("/Agent/editAgentForm.jsp");
@@ -242,35 +246,34 @@ public class RegisterServlet extends HttpServlet {
     private void updateAgent(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
 
-        int agentId = Integer.parseInt(request.getParameter("agentId"));
+        int agentId = Integer.parseInt(request.getParameter("id"));
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
         String phoneNo = request.getParameter("phoneNo");
-        String email = request.getParameter("email");
+        String email = request.getParameter("Email");
         String userName = request.getParameter("userName");
         String password = request.getParameter("password");
 
         Agent agentObj = new Agent(agentId, firstName, lastName, phoneNo, email, userName, password);
         try {
-            registerAgentService.updateAgent(agentObj, registerDao);
+            registerAgentService.updateAgent(agentObj, registerAgentDao);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-
-        response.sendRedirect("listAgeAgent");
+        viewAgents(request, response);
     }
 
     private void deleteAgent(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        int agentId = Integer.parseInt(request.getParameter("agentId"));
+        int agentId = Integer.parseInt(request.getParameter("id"));
 
         Agent agentObj = new Agent(agentId);
         try {
-            registerAgentService.deleteAgent(agentObj, registerDao);
+            registerAgentService.deleteAgent(agentObj, registerAgentDao);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
 
-        response.sendRedirect("listAgeAgent");
+        viewAgents(request, response);
     }
 }
