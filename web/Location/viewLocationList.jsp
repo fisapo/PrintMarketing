@@ -26,11 +26,11 @@
                         <td><c:out value="${location.locationId}"/></td>
                         <td><c:out value="${location.locationName}"/></td>
                         <td><c:out value="${location.distributionCapacity}"/></td>
-                        <td><a href="edit?id=<c:out value='${location.locationId}'/>">
+                        <td><a href="editLocation?id=<c:out value='${location.locationId}'/>">
                                 Edit
                             </a>
                             &nbsp;&nbsp;&nbsp;
-                            <a href="delete?id=<c:out value='${location.locationId}'/>">
+                            <a href="deleteLocation?id=<c:out value='${location.locationId}'/>">
                                 Delete
                             </a>
                         </td>
@@ -40,11 +40,11 @@
         </table>
     </center>
     <center>
-        <a href="newLoc">Add New Location</a>
+        <a href="newLocation">Add New Location</a>
         &nbsp;&nbsp;&nbsp;&nbsp;
-        <a href="listLoc">View Locations</a>
+        <a href="listLocation">View Locations</a>
         <br/>
-        <a href = "AgentFrom">Go to Agent(Rename)</a>;
+        <a href = "AgentFromLocation">Go to Agent(Rename)</a>;
     </center>
 </body>
 </html>

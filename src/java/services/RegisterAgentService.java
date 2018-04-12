@@ -1,9 +1,6 @@
 package services;
-//ansdansdpoans
-//solve this
-//testtinggg
 
-import dao.LocationDao;
+import dao.AgentDao;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import model.Agent;
@@ -11,38 +8,40 @@ import model.Agent;
 public class RegisterAgentService {
 
     public int addAgent(String firstName, String lastName, String phoneNo, String email,
-            String userName, String password, LocationDao dao) {
+            String userName, String password, AgentDao dao) {
         int res = 0;
         Agent AgentObj = new Agent();
         if (FormFilled(firstName, lastName, phoneNo, email, userName, password)) {
-            AgentObj.setFirstName(firstName);
-            AgentObj.setLastName(lastName);
-            AgentObj.setPhoneNo(phoneNo);
-            AgentObj.setEmail(email);
-            AgentObj.setUserName(userName);
-            AgentObj.setPassword(password);
+            AgentObj.setFirstName(firstName.trim());//Trim removes the white spaces.
+            AgentObj.setLastName(lastName.trim());
+            AgentObj.setPhoneNo(phoneNo.trim());
+            AgentObj.setEmail(email.trim());
+            AgentObj.setUserName(userName.trim());
+            AgentObj.setPassword(password.trim());
             res = dao.addAgent(AgentObj);
         }
+        System.out.println(firstName + lastName + phoneNo + email + userName + password);
+
         return res;
     }
 
-    public ArrayList<Agent> viewAgents(LocationDao dao) {
+    public ArrayList<Agent> viewAgents(AgentDao dao) {
         ArrayList<Agent> agentList = new ArrayList();
         agentList = dao.viewAgents();
         return agentList;
     }
 
-    public Agent showAgent(int id, LocationDao dao) throws SQLException {
+    public Agent showAgent(int id, AgentDao dao) throws SQLException {
         Agent AgentObj = dao.showAgent(id);
         return AgentObj;
     }
 
-    public boolean updateAgent(Agent AgentObj, LocationDao dao) throws SQLException {
+    public boolean updateAgent(Agent AgentObj, AgentDao dao) throws SQLException {
         boolean res = dao.updateAgent(AgentObj);
         return res;
     }
 
-    public boolean deleteAgent(Agent AgentObj, LocationDao dao) throws SQLException {
+    public boolean deleteAgent(Agent AgentObj, AgentDao dao) throws SQLException {
         boolean res = dao.deleteAgent(AgentObj);
         return res;
     }

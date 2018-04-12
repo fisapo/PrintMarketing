@@ -8,7 +8,7 @@
     <body>
     <center>
         <h2>Register new location</h2>
-        <form action="insertLoc" method="post" name="registerForm">
+        <form action="insertLocation" method="post" name="registerForm">
             <table cellpadding="5" border="1">
                 <tr>
                     <th>Location Name</th>

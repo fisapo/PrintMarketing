@@ -32,11 +32,11 @@
                         <td><c:out value="${agent.email}"/></td>
                         <td><c:out value="${agent.userName}"/></td>
                         <td><c:out value="${agent.password}"/></td>
-                        <td><a href="edit?id=<c:out value='${agent.agentId}'/>">
+                        <td><a href="editAgent?id=<c:out value='${agent.agentId}'/>">
                                 Edit
                             </a>
                             &nbsp;&nbsp;&nbsp;
-                            <a href="delete?id=<c:out value='${agent.agentId}'/>">
+                            <a href="deleteAgent?id=<c:out value='${agent.agentId}'/>">
                                 Delete
                             </a>
                         </td>
@@ -46,11 +46,11 @@
         </table>
     </center>
     <center>
-        <a href="NewAge">Add New Agent</a>
+        <a href="newAgent">Add New Agent</a>
         &nbsp;&nbsp;&nbsp;&nbsp;
-        <a href="listAge">View Agents</a>
+        <a href="listAgent">View Agents</a>
         <br/>
-        <a href = "AgentTo">Go to Location(Rename)</a>;
+        <a href = "AgentToLocation">Go to Location(Rename)</a>;
     </center>
 </body>
 </html>

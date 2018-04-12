@@ -8,7 +8,7 @@
     <body>
     <center>
         <h2>Edit location</h2>
-        <form action="updateLoc" method="post" name="editForm">
+        <form action="updateLocation" method="post" name="editForm">
             <input type="hidden" name="id" id="locationId" value="${location.locationId}"/>
             <table cellpadding="5" border="1">
                 <tr>

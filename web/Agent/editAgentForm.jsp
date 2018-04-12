@@ -8,7 +8,7 @@
     <body>
     <center>
         <h2>Edit agent</h2>
-        <form action="updateAgentLocation" method="post" name="editForm">
+        <form action="updateAgent" method="post" name="editForm">
             <input type="hidden" name="id" id="agentId" value="${agent.agentId}"/>
             <table cellpadding="5" border="1">
                 <tr>
@@ -32,7 +32,7 @@
                 <tr>
                     <th>Email</th>
                     <td>
-                        <input type="Email" name="Email" id="Email" value="${agent.Email}" required>
+                        <input type="Email" name="Email" id="Email" value="${agent.email}" required>
                     </td>
                 </tr>
                 <tr>
