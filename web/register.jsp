@@ -4,11 +4,11 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Registration Page</title>
-    </head>
+    <!-- Head -->
+    <%@include file="./shared/head.jsp" %>  
     <body>
+    <!-- Navigation bar -->
+    <%@include file="./shared/navbar.jsp" %>
         <center>
             <h2>Register new Client</h2>
             <form action="insert" method="post" name="registerForm">
@@ -80,5 +80,7 @@
                 </table>
             </form>
         </center>
+    <!-- Footer -->
+    <%@include file="./shared/footer.jsp" %>
     </body>
 </html>
